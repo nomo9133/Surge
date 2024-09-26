@@ -37,6 +37,19 @@
       "author": "@Chen-PJ",
       "repo": "https://github.com/nomo9133/Surge",
       "script": "https://raw.githubusercontent.com/nomo9133/Surge/check_in/ptt/pttLogin.js"
-    }     
+    },
+	{
+      "id": "openAPI_Test",
+      "name": "openAPI測試",
+      "descs_html": [
+        "openAPI內建example.js。"
+      ],
+      "icons": [
+        "https://raw.githubusercontent.com/Orz-3/mini/master/ptt.png"
+      ],
+      "author": "@Chen-PJ",
+      "repo": "https://github.com/nomo9133/Surge",
+      "script": "https://raw.githubusercontent.com/nomo9133/Surge/Tools/OpenAPI/example.js"
+    }	
   ]
 }
