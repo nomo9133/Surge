@@ -1,6 +1,5 @@
 // Ptt 自動登入 Bot
 
-// 初始化環境
 const $ = new Env('Ptt Login');
 
 // 取得 Boxjs 中儲存的帳號密碼
