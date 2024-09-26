@@ -38,7 +38,7 @@
       "repo": "https://github.com/nomo9133/Surge",
       "script": "https://raw.githubusercontent.com/nomo9133/Surge/check_in/ptt/pttLogin.js"
     },
-	{
+    {
       "id": "openAPI_Test",
       "name": "openAPI測試",
       "descs_html": [
