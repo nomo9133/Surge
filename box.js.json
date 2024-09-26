@@ -41,9 +41,11 @@
     {
       "id": "openAPI_Test",
       "name": "openAPI測試",
+      "keys": [],
       "descs_html": [
         "openAPI內建example.js。"
       ],
+      "settings": [],
       "icons": [
         "https://raw.githubusercontent.com/Orz-3/mini/master/ptt.png"
       ],
