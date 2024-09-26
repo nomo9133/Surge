@@ -10,7 +10,11 @@ if (!username || !password) {
   $.log("帳號或密碼未設定，請在 Boxjs 中設置");
   $.msg("Ptt Login Bot", "錯誤", "請在 Boxjs 中設置帳號密碼");
   $.done();
+  return;
 }
+
+$.log("開始登入 Ptt...");
+$.log(`使用者名稱: ${username}`);
 
 // Ptt 登入的 URL
 const loginUrl = "https://www.ptt.cc/ask/over18";
