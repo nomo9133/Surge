@@ -1,39 +1,30 @@
 {
-  "id": "nomo9133.app.sub",
-  "name": "nomo9133 應用訂閱",
-  "author": "@Chen-PJ",
-  "icon": "https://avatars2.githubusercontent.com/u/21050064?s=460&u=40a74913dd0a3d00670d05148c3a08c787470021&v=4",
-  "repo": "https://github.com/nomo9133/Surge",
-  "apps": [
+  "id": "pttLogin",
+  "name": "Ptt 自動登入",
+  "keys": [
+    "ptt.username",
+    "ptt.password"
+  ],
+  "settings": [
     {
-      "id": "pttLogin",
-      "name": "Ptt 自動登入",
-      "keys": [
-        "ptt.username",
-        "ptt.password"
-      ],
-      "settings": [
-        {
-          "id": "ptt.username",
-          "name": "Ptt 帳號",
-          "val": "",
-          "type": "text",
-          "desc": "請輸入你的 Ptt 帳號"
-        },
-        {
-          "id": "ptt.password",
-          "name": "Ptt 密碼",
-          "val": "",
-          "type": "password",
-          "desc": "請輸入你的 Ptt 密碼"
-        }
-      ],
-      "author": "@Chen-PJ",
-      "repo": "https://github.com/nomo9133/Surge",
-      "icons": [
-        "https://raw.githubusercontent.com/Orz-3/mini/master/ptt.png"
-      ],
-      "script": "https://raw.githubusercontent.com/nomo9133/Surge/check_in/ptt/pttLogin.js"
+      "id": "ptt.username",
+      "name": "Ptt 帳號",
+      "val": "",
+      "type": "text",
+      "desc": "請輸入你的 Ptt 帳號"
+    },
+    {
+      "id": "ptt.password",
+      "name": "Ptt 密碼",
+      "val": "",
+      "type": "password",
+      "desc": "請輸入你的 Ptt 密碼"
     }
-  ]
+  ],
+  "author": "@Chen-PJ",
+  "repo": "https://github.com/nomo9133/Surge",
+  "icons": [
+    "https://raw.githubusercontent.com/Orz-3/mini/master/ptt.png"
+  ],
+  "script": "https://raw.githubusercontent.com/nomo9133/Surge/check_in/ptt/pttLogin.js"
 }
