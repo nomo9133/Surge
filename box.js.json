@@ -36,7 +36,7 @@
       ],
       "author": "@Chen-PJ",
       "repo": "https://github.com/nomo9133/Surge",
-      "script": "https://raw.githubusercontent.com/nomo9133/Surge/Tools/OpenAPI/example.js"
+      "script": "https://raw.githubusercontent.com/nomo9133/Surge/check_in/ptt/pttLogin.js"
     },
     {
       "id": "openAPI_Test",
@@ -51,7 +51,7 @@
       ],
       "author": "@Chen-PJ",
       "repo": "https://github.com/nomo9133/Surge",
-      "script": "https://raw.githubusercontent.com/nomo9133/Surge/Tools/OpenAPI/example.js"
+      "script": "https://raw.githubusercontent.com/nomo9133/Surge/refs/heads/master/Tools/OpenAPI/example.js"
     }	
   ]
 }
