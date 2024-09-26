@@ -6,11 +6,14 @@
   "repo": "https://github.com/nomo9133/Surge",
   "apps": [
     {
-      "id": "pttLogin",
+      "id": "PttLogin",
       "name": "Ptt 自動登入",
       "keys": [
         "ptt.username",
         "ptt.password"
+      ],
+      "descs_html": [
+        "請輸入 Ptt 帳號與密碼以便自動登入。"
       ],
       "settings": [
         {
@@ -28,11 +31,11 @@
           "desc": "請輸入你的 Ptt 密碼"
         }
       ],
-      "author": "@Chen-PJ",
-      "repo": "https://github.com/nomo9133/Surge",
       "icons": [
         "https://raw.githubusercontent.com/Orz-3/mini/master/ptt.png"
       ],
+      "author": "@Chen-PJ",
+      "repo": "https://github.com/nomo9133/Surge",
       "script": "https://raw.githubusercontent.com/nomo9133/Surge/check_in/ptt/pttLogin.js"
     }     
   ]
