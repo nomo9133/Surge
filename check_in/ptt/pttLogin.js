@@ -1,6 +1,6 @@
 const $ = API("APP", true); // API("APP") --> 无log输出
 // 测试console
-$.log("checkin测试输出");
+$.log("checkin->ptt->测试输出");
 $.error("这是一条错误信息");
 
 // 测试通知
