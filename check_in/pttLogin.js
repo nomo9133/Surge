@@ -1,150 +1,67 @@
-const $ = API("APP", true); // API("APP") --> 无log输出
-// 测试console
-$.log("checkin->ptt->测试输出");
-$.error("这是一条错误信息");
+const $ = API("PttLogin", true);
 
-// 测试通知
-$.error({
-  message: "Test ERROR"
-});
-$.notify("标题");
-$.notify("跳转测试", "Subtitle", "点击跳转", {
-  "open-url": "http://www.bing.com",
-});
-$.notify("图片测试（QX有效）", "Subtitle", "", {
-  "media-url":
-    "https://avatars2.githubusercontent.com/u/21050064?s=460&u=40a74913dd0a3d00670d05148c3a08c787470021&v=4",
-});
-$.notify("HELLO", "", "");
+// BoxJS 中的 key
+const PTT_USERNAME = "ptt.username";
+const PTT_PASSWORD = "ptt.password";
 
-// 测试缓存
-const key = "测试";
-const data = "数据";
-$.write(data, key);
-$.write("Hello", "World");
-$.log(`当前缓存：\n${JSON.stringify($.cache)}`);
-if ($.read(key) !== data) {
-  $.notify("缓存测试炸了！", "", "");
-} else {
-  $.log("缓存测试通过！");
-}
-$.delete(key);
-if ($.read(key)) {
-  $.log("缓存Key未删除！");
-}
+// Ptt 相關設定
+const PTT_URL = "telnet://ptt.cc";
+const PTT_PORT = 23;
 
-$.write("World", "#Hello");
-if ($.read("#Hello") !== "World") {
-  $.notify("缓存测试炸了！", "", "");
-} else {
-  $.log("缓存测试通过！");
-}
+// 登入流程
+async function login() {
+  const username = $.read(PTT_USERNAME);
+  const password = $.read(PTT_PASSWORD);
 
-$.delete("#Hello");
-if ($.read("#Hello")) {
-  $.log("缓存Key未删除！");
-}
-
-const obj = {
-  hello: {
-    world: "HELLO",
-  },
-};
-
-$.write(obj, "obj");
-
-// 测试请求
-const headers = {
-  "user-agent": "OpenAPI",
-};
-const rawBody = "This is expected to be sent back as part of response body.";
-const jsonBody = {
-  HELLO: "WORLD",
-  FROM: "OpenAPI",
-};
-
-function assertEqual(a, b) {
-  for (let [key, value] of Object.entries(a)) {
-    if (a[key] !== b[key]) {
-      return false;
-    }
+  if (!username || !password) {
+    $.notify("Ptt 自動登入", "錯誤", "請先在 BoxJS 中設定帳號密碼");
+    return;
   }
-  return true;
+
+  try {
+    const socket = new WebSocket(`ws://localhost:8080${PTT_URL}:${PTT_PORT}`);
+
+    socket.onopen = () => {
+      $.log("連線已建立");
+    };
+
+    socket.onmessage = (event) => {
+      const response = event.data;
+      $.log("收到訊息:", response);
+
+      if (response.includes("請輸入代號")) {
+        socket.send(username + "\r\n");
+      } else if (response.includes("請輸入密碼")) {
+        socket.send(password + "\r\n");
+      } else if (response.includes("主功能表")) {
+        $.log("登入成功");
+        $.notify("Ptt 自動登入", "成功", "已成功登入 Ptt");
+        socket.close();
+      }
+    };
+
+    socket.onerror = (error) => {
+      $.error("WebSocket 錯誤:", error);
+      $.notify("Ptt 自動登入", "錯誤", "連線發生錯誤");
+    };
+
+    socket.onclose = () => {
+      $.log("連線已關閉");
+    };
+
+  } catch (error) {
+    $.error("發生錯誤:", error);
+    $.notify("Ptt 自動登入", "錯誤", error.message);
+  }
 }
-!(async () => {
-  await $.http
-    .get({
-      url: "https://postman-echo.com/get?foo1=bar1&foo2=bar2",
-      headers,
-    })
-    .then((response) => {
-      const body = JSON.parse(response.body);
-      if (!assertEqual(headers, body.headers)) {
-        console.log("ERROR: HTTP GET with header test failed!");
-      } else {
-        console.log("OK: HTTP GET with header test");
-      }
-    });
 
-  await $.http
-    .put({
-      url: "https://postman-echo.com/put",
-      body: rawBody,
-      headers: {
-        "content-type": "text/plain",
-      },
-    })
-    .then((response) => {
-      const body = JSON.parse(response.body);
-      if (body.data !== rawBody) {
-        console.log("ERROR: HTTP PUT with raw body test failed!");
-      } else {
-        console.log("OK: HTTP PUT with raw body test");
-      }
-    });
+// 主程序
+async function main() {
+  await login();
+  $.done();
+}
 
-  await $.http
-    .patch({
-      url: "https://postman-echo.com/patch",
-      body: JSON.stringify(jsonBody),
-    })
-    .then((response) => {
-      const body = JSON.parse(response.body);
-      if (!assertEqual(body.data, jsonBody)) {
-        console.log("ERROR: HTTP PATCH with json body test failed!");
-      } else {
-        console.log("OK: HTTP PATCH with json body test");
-      }
-    });
-
-  // timeout 测试，不要挂代理
-  await $.http
-    .get({
-      url: "http://www.twitter.com",
-      timeout: 100,
-      events: {
-        onTimeout: () => {
-          $.error("OHHHHHHHH")
-        }
-      }
-    })
-    .then((response) => {
-      console.log(response);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-
-  // 高级用法，自定义HTTP对象，设置默认的baseURL，以及默认的请求选项
-  const myHttp = HTTP("http://postman-echo.com", {
-    // 这里可以设置默认的请求options，比如timeout，events等
-  });
-})().then(() => $.done());
-
-// delay
-$.wait(1000).then(() => $.log("等待1s"));
-
-$.done();
+main();
 
 // prettier-ignore
 /*********************************** API *************************************/
