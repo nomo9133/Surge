@@ -6,52 +6,26 @@
   "repo": "https://github.com/nomo9133/Surge",
   "apps": [
     {
-      "id": "PttLogin",
-      "name": "Ptt 自動登入",
-      "keys": [
-        "ptt.username",
-        "ptt.password"
+      "id": "ApkTw",
+      "name": "ApkTw",
+      "keys": ["chavy_cookie_apktw"],
+      "author": "@Chen-PJ",
+      "repo": "https://github.com/nomo9133/Surge/tree/master/check_in/apktw",
+      "url": "https://apk.tw/",
+      "script": "https://raw.githubusercontent.com/nomo9133/Surge/refs/heads/master/check_in/apktw/apktw.js",
+      "icons": [
+        "https://raw.githubusercontent.com/Orz-3/mini/master/Alpha/apktw.png",
+        "https://raw.githubusercontent.com/Orz-3/mini/master/Color/apktw.png"
       ],
-      "descs_html": [
-        "請輸入 Ptt 帳號與密碼以便自動登入。"
-      ],
-      "settings": [
+      "tasks": [{ "cron": "3 0 * * *", "script": "apktw.js" }],
+      "rewrites": [
         {
-          "id": "ptt.username",
-          "name": "Ptt 帳號",
-          "val": "",
-          "type": "text",
-          "desc": "請輸入你的 Ptt 帳號"
-        },
-        {
-          "id": "ptt.password",
-          "name": "Ptt 密碼",
-          "val": "",
-          "type": "password",
-          "desc": "請輸入你的 Ptt 密碼"
+          "type": "response",
+          "pattern": "^https://apk.tw/member.php(.*?)action=login",
+          "script": "apktw.cookie.js",
+          "body": true
         }
-      ],
-      "icons": [
-        "https://raw.githubusercontent.com/Orz-3/mini/master/ptt.png"
-      ],
-      "author": "@Chen-PJ",
-      "repo": "https://github.com/nomo9133/Surge",
-      "script": "https://raw.githubusercontent.com/nomo9133/Surge/refs/heads/master/check_in/pttLogin.js"
-    },
-    {
-      "id": "openAPI_Test",
-      "name": "openAPI測試",
-      "keys": [],
-      "descs_html": [
-        "openAPI內建example.js。"
-      ],
-      "settings": [],
-      "icons": [
-        "https://raw.githubusercontent.com/Orz-3/mini/master/ptt.png"
-      ],
-      "author": "@Chen-PJ",
-      "repo": "https://github.com/nomo9133/Surge",
-      "script": "https://raw.githubusercontent.com/nomo9133/Surge/refs/heads/master/Tools/OpenAPI/example.js"
-    }	
+      ]
+    }
   ]
 }
