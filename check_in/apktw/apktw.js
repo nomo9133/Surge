@@ -4,11 +4,11 @@ $.VAL_login = $.getdata('chavy_cookie_apktw')
 !(async () => {
   $.log('', `🔔 ${$.name}, 開始!`, '')
   await login()
-  const initialCheck = await checkSignStatus(true)
+  const initialCheck = await checkSignStatus(true)  // 初次檢查，顯示完整信息
   if (!initialCheck) {
     const signResult = await sign()
     if (signResult) {
-      await checkSignStatus(false)
+      await checkSignStatus(false)  // 簽到後再次檢查，只顯示簽到結果
     } else {
       $.isSignSuc = false
     }
@@ -64,6 +64,7 @@ function checkSignStatus(isInitialCheck = true) {
 
       try {
         if (isInitialCheck) {
+          // 只在初次檢查時獲取用戶信息
           const usernameMatch = /<a href="space-uid-\d+\.html" target="_blank" title="訪問我的空間" class="showmenu">([^<]+)<\/a>/.exec(data);
           if (usernameMatch) {
             $.username = usernameMatch[1];
@@ -93,6 +94,7 @@ function checkSignStatus(isInitialCheck = true) {
             $.log("簽到成功")
             $.isSignSuc = true;
           }
+            // 只在非初次檢查時設置 $.isSignSuc
         } else {
           if(isInitialCheck){
             $.log("尚未簽到");
@@ -141,13 +143,12 @@ function sign() {
       }
     };
     
-    $.log("簽到中..")
+    $.log("簽到中..");
     $.get(url, (error, response, data) => {
       if (error) {
         $.log(`❗️ ${$.name}, 簽到請求失敗!`, ` error = ${error}`, `response = ${JSON.stringify(response)}`, '')
         resolve(false)
       } else {
-        $.log("簽到請求已發送，等待檢查結果");
         resolve(true)
       }
     })
