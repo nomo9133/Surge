@@ -4,9 +4,14 @@ $.VAL_login = $.getdata('chavy_cookie_apktw')
 !(async () => {
   $.log('', `🔔 ${$.name}, 開始!`, '')
   await login()
-  await getHash()
-  if (!$.isSigned) {
-    await sign()
+  const initialCheck = await checkSignStatus(true)
+  if (!initialCheck) {
+    const signResult = await sign()
+    if (signResult) {
+      await checkSignStatus(false)
+    } else {
+      $.isSignSuc = false
+    }
   }
   await showmsg()
 })()
@@ -34,8 +39,9 @@ function login() {
   })
 }
 
-function getHash() {
-  $.log("取得Hash..");
+function checkSignStatus(isInitialCheck = true) {
+  const checkMessage = isInitialCheck ? "檢查簽到狀態" : "確認簽到結果";
+  $.log(checkMessage + "..");
   return new Promise((resolve, reject) => {
     const loginInfo = JSON.parse($.VAL_login);
     const url = {
@@ -49,8 +55,6 @@ function getHash() {
       }
     };
 
-    //$.log("本次使用cookie: " + loginInfo.headers.cookie);
-
     $.get(url, (error, response, data) => {
       if (error) {
         $.log(`❗️ ${$.name}, 執行失敗!`, ` error = ${error}`, `response = ${JSON.stringify(response)}`, '');
@@ -59,51 +63,58 @@ function getHash() {
       }
 
       try {
-        // 取得使用者名稱
-        const usernameMatch = /<a href="space-uid-\d+\.html" target="_blank" title="訪問我的空間" class="showmenu">([^<]+)<\/a>/.exec(data);
-        if (usernameMatch) {
-          $.username = usernameMatch[1];
-          $.log(`使用者名稱: ${$.username}`);
-        }
-
-        // 取得用戶組
-        const usergroupMatch = /<a href="home\.php\?mod=spacecp&amp;ac=usergroup"><strong>\s*(.*?)\s*<\/strong><\/a>/.exec(data);
-        if (usergroupMatch) {
-          let usergroup = usergroupMatch[1].trim();
-          
-          // 使用正則表達式提取用戶組，如果存在 "用戶組:" 前綴
-          const groupMatch = /用戶組:\s*(.+)/.exec(usergroup);
-          if (groupMatch) {
-            $.usergroup = groupMatch[1].trim();
-          } else {
-            // 如果沒有匹配到 "用戶組:"，則使用 split 方法
-            const parts = usergroup.split(/:\s*/);
-            $.usergroup = parts[parts.length - 1].trim();
+        if (isInitialCheck) {
+          const usernameMatch = /<a href="space-uid-\d+\.html" target="_blank" title="訪問我的空間" class="showmenu">([^<]+)<\/a>/.exec(data);
+          if (usernameMatch) {
+            $.username = usernameMatch[1];
+            $.log(`使用者名稱: ${$.username}`);
           }
-          
-          $.log(`用戶組: ${$.usergroup}`);
+
+          const usergroupMatch = /<a href="home\.php\?mod=spacecp&amp;ac=usergroup"><strong>\s*(.*?)\s*<\/strong><\/a>/.exec(data);
+          if (usergroupMatch) {
+            let usergroup = usergroupMatch[1].trim();
+            const groupMatch = /用戶組:\s*(.+)/.exec(usergroup);
+            if (groupMatch) {
+              $.usergroup = groupMatch[1].trim();
+            } else {
+              const parts = usergroup.split(/:\s*/);
+              $.usergroup = parts[parts.length - 1].trim();
+            }
+            $.log(`用戶組: ${$.usergroup}`);
+          }
         }
 
-        $.log("檢查是否已經簽到");
         if (/\/source\/plugin\/dsu_amupper\/images\/wb\.gif/.test(data)) {
-          $.log("已經簽到");
-          $.isSigned = true;
-          $.isSignSuc = true;
+          if(isInitialCheck){
+            $.log("已經簽到");
+            $.isSigned = true;
+          }
+          else{
+            $.log("簽到成功")
+            $.isSignSuc = true;
+          }
         } else {
-          $.log("尚未簽到");
-          $.isSigned = false;
-          const match = /formhash=([^&]+)/.exec(data);
-          if (match) {
-            $.hash = match[1];
-            $.log("找到hash值: " + $.hash);
-          } else {
-            $.log("找不到hash");
+          if(isInitialCheck){
+            $.log("尚未簽到");
+            $.isSigned = false;
+          }
+          else{
+            $.log("簽到失敗");
             $.isSignSuc = false;
           }
+          if (isInitialCheck) {
+            const match = /formhash=([^&]+)/.exec(data);
+            if (match) {
+              $.hash = match[1];
+              $.log("找到hash值: " + $.hash);
+            } else {
+              $.log("找不到hash");
+            }
+          }
         }
-        resolve();
+        resolve($.isSigned);
       } catch (e) {
-        $.log(`❗️ ${$.name}, 執行失敗!`, ` error = ${e}`, `response = ${JSON.stringify(response)}`, '');
+        $.log(`❗️ ${$.name}, 執行失敷!`, ` error = ${e}`, `response = ${JSON.stringify(response)}`, '');
         reject(e);
       }
     });
@@ -112,17 +123,9 @@ function getHash() {
 
 function sign() {
   return new Promise((resolve) => {
-    if ($.isSigned) {
-      $.log("已經簽到,跳過簽到流程");
-      $.isSignSuc = true;
-      resolve();
-      return;
-    }
-    
     if (!$.hash) {
       $.log("沒有找到 hash 值,無法進行簽到");
-      $.isSignSuc = false;
-      resolve();
+      resolve(false);
       return;
     }
     
@@ -138,39 +141,31 @@ function sign() {
       }
     };
     
+    $.log("簽到中..")
     $.get(url, (error, response, data) => {
-      $.log("簽到中..")
-      try {
-        if (error) throw new Error(error)
-        if (/\/source\/plugin\/dsu_amupper\/images\/wb\.gif/.test(data)) {
-          $.isSignSuc = true
-          $.log("簽到成功");
-        } else {
-          $.isSignSuc = false
-          $.log("簽到失敗");
-        }
-      } catch (e) {
-        $.isSignSuc = false
-        $.log(`❗️ ${$.name}, 執行失敗!`, ` error = ${error || e}`, `response = ${JSON.stringify(response)}`, '')
-      } finally {
-        resolve()
+      if (error) {
+        $.log(`❗️ ${$.name}, 簽到請求失敗!`, ` error = ${error}`, `response = ${JSON.stringify(response)}`, '')
+        resolve(false)
+      } else {
+        $.log("簽到請求已發送，等待檢查結果");
+        resolve(true)
       }
     })
   })
 }
 
 function showmsg() {
-  return new Promise((resove) => {
+  return new Promise((resolve) => {
     if ($.isSigned) {
       $.subt = '簽到: 重複'
-    } else if (!$.isSigned && $.isSignSuc) {
+    } else if ($.isSignSuc) {
       $.subt = '簽到: 成功'
     } else {
       $.subt = '簽到: 失敗'
     }
     $.desc = `使用者名稱: ${$.username || '未知'}`
     $.desc += `\n用戶組: ${$.usergroup || '未知'}`
-    resove()
+    resolve()
   })
 }
 
